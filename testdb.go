@@ -19,6 +19,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -90,10 +91,14 @@ func NewTestDB() (tdb TestDB, err error) {
 
 // NewTestDBWith opens the given database file and returns a new TestDB instance,
 // if the file argument is empty, a ":memory:" database is used
+//
+// Note that if the database file given is actually a file, the file will be
+// deleted when Close is called
 func NewTestDBWith(file string) (tdb TestDB, err error) {
 	if file == "" {
 		file = ":memory:"
 	}
+	file += "?cache=shared"
 	t := &testdb{file: file}
 	if err = t.Open(); err == nil {
 		tdb = t
@@ -110,6 +115,7 @@ func (t *testdb) Close() {
 	if t.dbh != nil {
 		file := t.SqliteDB()
 		_ = t.dbh.Close()
+		file, _, _ = strings.Cut(file, "?")
 		if file != "" && file != ":memory:" {
 			_ = os.Remove(file)
 		}
