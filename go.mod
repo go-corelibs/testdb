@@ -1,6 +1,6 @@
 module github.com/go-corelibs/testdb
 
-go 1.21.6
+go 1.22.4
 
 require (
 	github.com/go-corelibs/slices v1.6.1
