@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -84,21 +85,28 @@ type testdb struct {
 	dbh  *sql.DB
 }
 
-// NewTestDB is a wrapper around ":memory:" call to NewTestDBWith
+// NewTestDB is a wrapper around a default call to NewTestDBWith (creating an
+// in-memory db)
 func NewTestDB() (tdb TestDB, err error) {
-	return NewTestDBWith(":memory:")
+	return NewTestDBWith("")
 }
 
 // NewTestDBWith opens the given database file and returns a new TestDB instance,
-// if the file argument is empty, a ":memory:" database is used
+// if the file argument is empty, an in-memory database is used
 //
 // Note that if the database file given is actually a file, the file will be
-// deleted when Close is called
+// deleted when the Close method is called
 func NewTestDBWith(file string) (tdb TestDB, err error) {
 	if file == "" {
-		file = ":memory:"
+		file = fmt.Sprintf("file:testdb-%d?mode=memory&cache=shared", time.Now().UnixMicro())
+	} else {
+		if strings.Contains(file, "?") {
+			file += "&"
+		} else {
+			file += "?"
+		}
+		file += "cache=shared"
 	}
-	file += "?cache=shared"
 	t := &testdb{file: file}
 	if err = t.Open(); err == nil {
 		tdb = t

@@ -30,7 +30,7 @@ func TestTestDB(t *testing.T) {
 		So(tempdir, ShouldNotEqual, "")
 		defer tempdir.Destroy()
 
-		Convey(":memory:", func() {
+		Convey("in-memory", func() {
 			tdb, err := NewTestDB()
 			So(err, ShouldBeNil)
 			So(tdb, ShouldNotBeNil)
@@ -47,6 +47,15 @@ func TestTestDB(t *testing.T) {
 			defer tdb.Close()
 			So(tdb.DBH(), ShouldNotBeNil)
 			So(tdb.SqliteDB(), ShouldEqual, dbpath)
+		})
+
+		Convey("testing-testdb?mode=memory", func() {
+			tdb, err := NewTestDBWith("file:testing-testdb?mode=memory")
+			So(err, ShouldBeNil)
+			So(tdb, ShouldNotBeNil)
+			defer tdb.Close()
+			So(tdb.DBH(), ShouldNotBeNil)
+			So(tdb.SqliteDB(), ShouldEqual, "")
 		})
 
 	})
