@@ -3,6 +3,6 @@
 CORELIB_PKG := go-corelibs/testdb
 VERSION_TAGS += MAIN
 MAIN_MK_SUMMARY := ${CORELIB_PKG}
-MAIN_MK_VERSION := v1.0.1
+MAIN_MK_VERSION := v1.0.2
 
 include CoreLibs.mk
